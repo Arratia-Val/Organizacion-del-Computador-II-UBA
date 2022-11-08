@@ -1,0 +1,86 @@
+                                    DEFINES, ENDIANESS Y SHUFFLES
+
+https://www.overleaf.com/project/63103f1ed81805f8a6911b64   Taller 3
+
+https://www.overleaf.com/project/630d8e208f37ac270cbc4576   Taller 2
+
+
+
+    LEA means Load Effective Address
+    MOV means Load Value
+
+LEA ax, [BP+SI+5] ; Compute address of value, guarda la direccion
+
+MOV ax, [BP+SI+5] ; Load value at that address, guarda el valor que estaba en la direccion
+
+
+DIAPO SIMD
+punpckhbw, punpcklbw   -----> para desempaquetar
+
+punpckhbw ---> unpack parte alta de byte a word
+punpcklbw ---> unpack parte baja de byte a word
+
+cada uno con sus variaciones
+ 	bw ---> byte to word (1byte a 2bytes)
+ 	dq ----> doble to quad (4bytes to 8bytes)
+ 	qdq ----> quad to doble quad   (8bytes to 16bytes 128 bit)
+ 	wd ---> word to double (2bytes to 4bytes)
+
+
+phaddw   -----> suma horizontal
+phaddd
+phaddsw ----> con saturacion
+
+lo mismo con la resta
+
+
+--- logico lo da vuelta o lo llena con ceros
+PSLLD	Shift Packed Data Left Logical
+PSLLDQ	Shift Double Quadword Left Logical
+PSLLQ	Shift Packed Data Left Logical
+PSLLW	Shift Packed Data Left Logical
+
+PSRLD	Shift Packed Data Right Logical
+PSRLDQ	Shift Double Quadword Right Logical
+PSRLQ	Shift Packed Data Right Logical
+PSRLW	Shift Packed Data Right Logical
+
+-- te llena de uno o cero por el signo
+PSRAD	Shift Packed Data Right Arithmetic
+PSRAQ	Shift Packed Data Right Arithmetic
+PSRAW	Shift Packed Data Right Arithmetic
+
+
+
+
+
+---CONVERTS
+
+CVTDQ2PD	Convert Packed Doubleword Integers to Packed Double-Precision Floating-Point Values
+CVTDQ2PS	Convert Packed Doubleword Integers to Packed Single-Precision Floating-Point Values
+CVTPD2DQ	Convert Packed Double-Precision Floating-Point Values to Packed Doubleword Integers
+CVTPD2PI	Convert Packed Double-Precision FP Values to Packed Dword Integers
+CVTPD2PS	Convert Packed Double-Precision Floating-Point Values to Packed Single-Precision Floating-Point Values
+CVTPI2PD	Convert Packed Dword Integers to Packed Double-Precision FP Values
+CVTPI2PS	Convert Packed Dword Integers to Packed Single-Precision FP Values
+CVTPS2DQ	Convert Packed Single-Precision Floating-Point Values to Packed Signed Doubleword Integer Values
+CVTPS2PD	Convert Packed Single-Precision Floating-Point Values to Packed Double-Precision Floating-Point Values
+CVTPS2PI	Convert Packed Single-Precision FP Values to Packed Dword Integers
+CVTSD2SI	Convert Scalar Double-Precision Floating-Point Value to Doubleword Integer
+CVTSD2SS	Convert Scalar Double-Precision Floating-Point Value to Scalar Single-Precision Floating-Point Value
+CVTSI2SD	Convert Doubleword Integer to Scalar Double-Precision Floating-Point Value
+CVTSI2SS	Convert Doubleword Integer to Scalar Single-Precision Floating-Point Value
+CVTSS2SD	Convert Scalar Single-Precision Floating-Point Value to Scalar Double-Precision Floating-Point Value
+CVTSS2SI	Convert Scalar Single-Precision Floating-Point Value to Doubleword Integer
+CVTTPD2DQ	Convert with Truncation Packed Double-Precision Floating-Point Values to Packed Doubleword Integers
+CVTTPD2PI	Convert with Truncation Packed Double-Precision FP Values to Packed Dword Integers
+CVTTPS2DQ	Convert with Truncation Packed Single-Precision Floating-Point Values to Packed Signed Doubleword Integer Values
+CVTTPS2PI	Convert with Truncation Packed Single-Precision FP Values to Packed Dword Integers
+CVTTSD2SI	Convert with Truncation Scalar Double-Precision Floating-Point Value to Signed Integer
+CVTTSS2SI	Convert with Truncation Scalar Single-Precision Floating-Point Value to Integer
+
+
+
+
+
+

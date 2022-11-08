@@ -1,0 +1,126 @@
+                                    DEFINES, ENDIANESS Y SHUFFLES
+
+
+1) Cómo definir con db?
+
+Es recomendado para hacer mascaras y shuffles usar db 
+si después lo vas a cargar en un xmm con movdqa/movdqu
+tenes que escribir primero lo que queres en el byte 0, despues en el byte 1 y asi
+o sea que si yo quiero cargar:
+    valor  : 08 00 07 00 06 00 05 00 04 00 03 00 02 00 01 00
+    nº byte: 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+
+tengo que hacer:
+    mask db 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04, 0x00, 0x05, 0x00, 0x06, 0x00, 0x07, 0x00, 0x08
+    movdqu xmm0, [mask]
+
+
+Si por algun motivo no estan usando db para definir en memoria tengan cuidado que el valor que escriben 
+en vs code se va a escribir en memoria con los bytes al reves o sea:
+
+    doble dd 0xAABBCCDD pone en memoria 0xDD, 0xCC, OxBB, 0xAA (leido del byte con la menor dirección a la mayor)
+    aunque si le piden que lo interprete como doble word (ya se en gdb o en asm)
+    lo va a evaluar como 0xAABBCCDD
+
+
+La conclusión es que si lo que quieren son bytes usen db, si lo que quieren es otra cosa usen d_otracosa
+
+-------------------------------------------------------------------------------
+###############################################################################
+-------------------------------------------------------------------------------
+
+
+2) Cómo interpretar p $xmm0 en gdb?
+
+en xmm0 tenemos lo siguiente:
+    nº byte: 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+    valor:   08 00 07 00 06 00 05 00 04 00 03 00 02 00 01 00
+
+si hacemos p/d $xmm0 gdb nos muestra:
+
+    v16_int8 = {[0] = 1, [1] = 0, [2] = 2, [3] = 0, [4] = 3, [5] = 0, [6] = 4, [7] = 0, [8] = 5, [9] = 0, [10] = 6, [11] = 0, [12] = 7, [13] = 0, [14] = 8, [15] = 0},
+    v8_int16 = {[0] = 1, [1] = 2, [2] = 3, [3] = 4, [4] = 5, [5] = 6, [6] = 7, [7] = 8},
+    v4_int32 = {[0] = 131073, [1] = 262147, [2] = 393221, [3] = 524295},
+    v2_int64 = {[0] = 1125912791875585, [1] = 2251829878849541},
+    uint128  = 41538929472669868031141181829283841
+
+Cada dato lo lee desde el byte menos significativo al más significativo entonces:
+    v16_int8: te dice que hay en cada byte
+    v8_int16: [i] te lee byte_{i/2+1} ++ byte_{i/2}
+    
+
+También puede ser util pedirle a gdb p/x $xmm0 que te lo imprime en hexa para ver el de 128 de forma razonable
+Cuidado que puede que falten ceros adelante del uint128. Se puede chequear en copiando el dato en vs code:
+    lo seleecionas y en la barra de abajo seleccionando todo el dato cuantos caracteres tiene. Tendria que tener 32
+
+O sea que si p/x $xmm0 muestra esto:
+
+    v16_int8 = {[0x0] = 0x1, [0x1] = 0x0, [0x2] = 0x2, [0x3] = 0x0, [0x4] = 0x3, [0x5] = 0x0, [0x6] = 0x4, [0x7] = 0x0, [0x8] = 0x5, [0x9] = 0x0, [0xa] = 0x6, [0xb] = 0x0, [0xc] = 0x7, [0xd] = 0x0, [0xe] = 0x8, [0xf] = 0x0},
+    v8_int16 = {[0x0] = 0x1, [0x1] = 0x2, [0x2] = 0x3, [0x3] = 0x4, [0x4] = 0x5, [0x5] = 0x6, [0x6] = 0x7, [0x7] = 0x8},
+    v4_int32 = {[0x0] = 0x20001, [0x1] = 0x40003, [0x2] = 0x60005, [0x3] = 0x80007},
+    v2_int64 = {[0x0] = 0x4000300020001, [0x1] = 0x8000700060005},
+    uint128  = 0x80007000600050004000300020001
+
+En realidad tenes:
+    uint128 = 0x00080007000600050004000300020001
+
+Esto significa que: (es leer de atras para adelante)
+    byte 00 = 01
+    byte 01 = 00
+    byte 02 = 02
+    byte 03 = 00
+    byte 04 = 03
+    byte 05 = 00
+    byte 06 = 04
+    byte 07 = 00
+    byte 08 = 05
+    byte 09 = 00
+    byte 10 = 06
+    byte 11 = 00
+    byte 12 = 07
+    byte 13 = 00
+    byte 14 = 08
+    byte 15 = 00
+
+
+
+-------------------------------------------------------------------------------
+###############################################################################
+-------------------------------------------------------------------------------
+
+
+3) Cómo funciona pshufb?
+
+pshufb xmmA, xmmB
+mueve los bytes de xmmA según la máscara que metamos en xmmB (máscara no es la palabra técnica pero ni idea cuál es)
+cuando digo: xmmk[i] me refiero al byte i del registro xmmk
+
+en xmm1[i] se escribe qué byte quiero poner en xmm0[i]
+un par de ejemplos:
+    si quiero mover xmm0[0] a todos los demás entonces todos los xmm1[i] tendrían que valer 0x00
+    si quiero mover xmm0[5] a todos los demás entonces todos los xmm1[i] tendrían que valer 0x05
+
+    nºbyte  :  15  14  13  12  11  10  09  08  07  06  05  04  03  02  01  00
+    tengo   : [¬¬][==][$$][^^][##][@@][&&][//][__][,,][..][--][++][??][!!][**]
+    mascara : [13][00][14][14][09][07][03][05][02][01][01][12][01][04][00][15]  //NOTAR QUE VALE MOVER EL MISMO BYTE A DOS LUGARS DIFERENTES
+    obtengo : [$$][**][==][==][&&][__][++][..][??][!!][!!][^^][!!][--][**][¬¬]
+
+    para cargar esta máscara hay que hacer 
+        mask db 0x15, 0x00, 0x04, 0x01, 0x12, 0x01, 0x01, 0x02, 0x05, 0x03, 0x07, 0x09, 0x14, 0x14, 0x00, 0x13
+        movdqu xmm1, [mask]
+
+
+    antes de aplicar el pshufb si hago gdb p $xmm0
+        v16_int8 = {[0x0] = **, [0x1] = !!, [0x2] = ??, [0x3] = ++, [0x4] = --, [0x5] = .., [0x6] = ,,, [0x7] = __, [0x8] = //, [0x9] = &&, [0xa] = @@, [0xb] = ##, [0xc] = ^^, [0xd] = $$, [0xe] = ==, [0xf] = ¬¬}
+        uint128 = ¬¬==$$^^##@@&&//__,,..--++??!!**
+    
+    despues de pshufb si hago gdb p $xmm0
+        v16_int8 = {[0x0] = ¬¬, [0x1] = **, [0x2] = --, [0x3] = !!, [0x4] = ^^, [0x5] = !!, [0x6] = !!, [0x7] = ??, [0x8] = .., [0x9] = ++, [0xa] = __, [0xb] = &&, [0xc] = ==, [0xd] = ==, [0xe] = **, [0xf] = $$}
+        uint128 = $$**====&&__++..??!!!!^^!!--**¬¬
+
+
+además pshufb tiene una funcionalidad más, no solo te permite meter bytes de xmm0 si no que también te deja
+meter el byte 0x00. Si yo quiero en xmm0[i] el byte 0x00 entonces en xmm1[i] tengo que meter un byte que su primer
+bit sea un 1. Lo mas facil es usar 0xFF cuando queres poner 0x00 y 0x0j cuando queres poner el byte j
+notar que como son 15 bytes con un solo caracter en hexa nos alcanza para llamarlos a todos
+
