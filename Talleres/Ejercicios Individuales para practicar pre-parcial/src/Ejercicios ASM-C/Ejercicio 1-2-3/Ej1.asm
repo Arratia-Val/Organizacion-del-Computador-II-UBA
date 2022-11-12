@@ -16,7 +16,7 @@ ej1:
     ;epilogo //pusheo al stack actualizo rbp y rsp lo ubico con rbp
     push rbp
     mov rbp, rsp 
-    push rsi
+    push rsi ;fija el valor de rsi
 
     mov rcx,0x10 ;tamaño del vector recorda que va en hexa
     xor rdx,rdx
@@ -49,10 +49,3 @@ exit:
 ;d) Asuma que los registros de 64bits están completos con unos. ¿Que pasarı́a cuando muevan los enteros de 32 bits y
 ;sume en 64 bits? Escriba un código para solucionar el problema.
 
-
-global ej5
-ej5:
-    _llamadora:;desde aca llamar a invocada
-
-    _invocada:
-        

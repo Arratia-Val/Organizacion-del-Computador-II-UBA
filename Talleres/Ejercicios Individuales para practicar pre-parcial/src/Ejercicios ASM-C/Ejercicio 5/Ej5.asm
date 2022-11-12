@@ -1,5 +1,5 @@
 section .data
-    n dd 4 ;estos se definen como direc de memoria
+    n: dd 4 ;estos se definen como direc de memoria
     ;para acceder al valor uso []
 section .text
 global _start
