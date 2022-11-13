@@ -2,22 +2,24 @@
 #include <stdint.h>
 #include <stdio.h>
 
-typedef struct s_nodoDos
-{
-    char tipo;           //1 byte    --> offset=0
-    void* data;            // 8 bytes   --> offset= 8
-    void* derecha;          // 8 bytes   --> offset= 16
-    void* izquierda;        // 8 bytes   --> offset= 24
-}nodoDos;
-
-typedef struct s_nodoTres
-{
-    char tipo;          //1 byte    --> offset=0
-    void* data;         // 8 bytes   --> offset= 8
-    void* derecha;      // 8 bytes   --> offset= 16
-    void* izquierda;    // 8 bytes   --> offset= 24
-    void* centro;       // 8 bytes   --> offset= 32
-}nodoTres;
+uint32_t lenght(char* s){
+    uint32_t i=0;
+    while(s[i] != 0){
+        i++;
+    }
+    return i+1; //devuelve el i más el digito NULL
+}
 
 
-void BorrarCentro(void **nodo, funBorrar *fb){}
+int main(){
+    char* s="CASA0";
+    //uint32_t x=3;
+    for(uint32_t i=0;i<lenght(s);i++){
+        if(s[i]==67){
+            s[i]='F';
+        }
+    }
+    printf("%s\n", s);
+    return 0;
+}
+
