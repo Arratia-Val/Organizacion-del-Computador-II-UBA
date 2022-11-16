@@ -1,0 +1,11 @@
+
+
+NULL TERMINATED STRING
+----------- es necesario para el printf (así sabe hasta donde imprimir)
+
+
+MALLOC
+-----malloc( LEN * SIZEOF() )
+
+        ej:  len=longitud de un STRING
+             sizeof( un tipo de dato ) - --> como es string -----> SIZEOF( CHAR ) = 1 byte

@@ -20,6 +20,7 @@ char* cesar(char* s,int x){
     //pido memoria para el resultado
     char* res;
     res= malloc((len + 1) * sizeof(char)); //HAY QUE PEDIR MEMORIA
+                                           //los bytes que ocupa un char por la longitud
 
     for(int i=0;i<len;i++){
 
