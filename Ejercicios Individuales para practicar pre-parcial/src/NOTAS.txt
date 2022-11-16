@@ -1,0 +1,110 @@
+(    instruction dst , src    )
+
+
+
+NULL TERMINATED STRING
+----------- es necesario para el printf (así sabe hasta donde imprimir)
+
+
+MALLOC
+-----malloc( LEN * SIZEOF() )
+
+        ej:  len=longitud de un STRING
+             sizeof( un tipo de dato ) - --> como es string -----> SIZEOF( CHAR ) = 1 byte
+
+
+
+
+################      SIMD       ##################
+
+
+Mov. de datos: movd, movq, movdqu
+        d double    --------------- = 32 bits = 4 bytes
+        q quadword    ------------- = 64 bits = 8 bytes
+        dqu double quadword ------- = 128 bits = 16 bytes
+
+        movdqu = particularmente para mover todos los eltos en el xmm
+
+
+Aritméticas: paddb, paddw, paddd, paddq, psubb, psubw, psubd, psubq
+
+        paddb = suma packet bytes
+        paddw
+        paddd
+        paddq
+        ---> suma normal de bytes words double quadwords doublequadwords
+        lo mismo con sub
+
+
+Comparación: pcmpgtb, pcmpgtw, pcmpgtd, pcmpeqb, pcmpeqw, pcmpeqd
+Lógicas: pand, por, pxor, pandn
+Nivel de Bit: psrlw, psrld, psrlq, psrldq, pslld,psllq, pslldq
+
+--------------------------------------------
+#####   Desempaquetado: punpcklbw, punpcklwd, punpcklddq, punpckhbw, punpckhwd, punpckhddq
+
+punpckhbw, punpcklbw   -----> para desempaquetar
+
+punpckhbw ---> unpack parte alta de byte a word
+punpcklbw ---> unpack parte baja de byte a word
+
+cada uno con sus variaciones
+ 	bw ---> byte to word (1byte a 2bytes)
+ 	dq ----> doble to quad (4bytes to 8bytes)
+ 	qdq ----> quad to doble quad   (8bytes to 16bytes 128 bit)
+ 	wd ---> word to double (2bytes to 4bytes)
+
+
+Empaquetado: packsswb, packssdw, packuswb, packusdw
+
+------------------------------------------------
+######## SUMAS HORIZONTALES  ######
+
+phaddw   -----> suma horizontal
+phaddd
+phaddsw ----> con saturacion
+
+lo mismo con la resta
+
+-------------------------------------------------
+
+
+Aritméticas: pmullw, pmulld, pmulhw, pmulhd, pmaddwd, pmaxub, pmaxuw, pmaxud, pminub,
+pminuw, pminud
+
+
+
+
+Reordenamiento: pshufb, pshufw, pshufd
+--------------------------------------
+-------logico lo "da vuelta" o lo llena con ceros
+PSLLD	Shift Packed Data Left Logical
+PSLLDQ	Shift Double Quadword Left Logical
+PSLLQ	Shift Packed Data Left Logical
+PSLLW	Shift Packed Data Left Logical
+
+        psll_ ----> (<<) 100 << 2 = 100 00 => (100) * 2² = 16
+        (MULTIPLICACION)
+
+PSRLD	Shift Packed Data Right Logical
+PSRLDQ	Shift Double Quadword Right Logical
+PSRLQ	Shift Packed Data Right Logical
+PSRLW	Shift Packed Data Right Logical
+
+        psrl_ -----> (>>) 100 >> 2 = 001  => (100) /2² 
+        (DIVISION)
+
+--- -- te llena de uno o cero por el signo
+PSRAD	Shift Packed Data Right Arithmetic
+PSRAQ	Shift Packed Data Right Arithmetic
+PSRAW	Shift Packed Data Right Arithmetic
+
+        psra_ ------> (>>) 101 >> 2 = 00 1 | 01 =>
+
+
+
+--------------------------------------
+Para flotantes
+
+Mov. de datos: movups, movaps, movupd, movapd
+Aritméticas: addps, addpd, subps, subpd, mulps, mulpd, divps, divpd, sqrtps, sqrtpd
